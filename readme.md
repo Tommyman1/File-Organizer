@@ -1,0 +1,1 @@
+This is a file organizer the goal is to organize this based on file etensions and sort them into certains folders to keep your computer nice and clean
