@@ -125,32 +125,66 @@ if __name__ == "__main__":
     getting_files(temp_path2,final_files)
     
     #filtered_folders has all the folders 1st layer temp1 #final_folders has the 2st layer folder temp2
-    total_folders = filtered_folders + final_folders
-    os.makedirs(
-        os.path.join(temp_path,"Other_Folders"),
-        exist_ok=True)
+    total_folders1 = filtered_folders + final_folders
     
-    for item in final_folders:
-        shutil.move(
-            os.path.join(temp_path2,item),
-            os.path.join(temp_path,"Other_Folders"))
-
+    predefined_folders = {
+    "images": [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".pdf"],
+    "videos": [".mp4", ".mkv", ".avi", ".mov", ".wmv", ".flv"],
+    "audio": [".mp3", ".wav", ".flac", ".aac", ".ogg"],
+    "documents": [".doc", ".docx", ".odt", ".rtf"],
+    "spreadsheets": [".xls", ".xlsx", ".ods", ".csv"],
+    "presentations": [".ppt", ".pptx", ".odp"],
+    "textfiles": [".txt", ".md"],
+    "executables": [".exe", ".msi", ".sh", ".bat", ".app"],
+    "archives": [".zip", ".rar", ".7z", ".tar", ".gz"],
+    "scripts": [".py", ".js", ".java", ".cpp", ".html", ".css"],
+    "Other_Folders": []}
+    
+    total_folders2 = []
+    categorie_key = []
+    
+    for categories, extension_files in predefined_folders.items():
+        os.makedirs(
+        os.path.join(temp_path,categories),
+        exist_ok=True)
+        
+        for extension in extension_files:
+            total_folders2.append(extension.replace(".",""))
+            os.makedirs(
+            os.path.join(temp_path,categories,extension.replace(".","")),
+            exist_ok=True)
+    
+    for folders_to_move_path1 in final_folders:
+        for folder in folders_to_move_path1:
+            shutil.move(
+                os.path.join(temp_path2,folder),
+                os.path.join(temp_path,"Other_Folders"))
+    
+    for categories, extension_files in predefined_folders.items():
+        categorie_key.append(categories)
+        for extension in extension_files:
+            total_folders2.append(extension.replace(".",""))
+            
+    total_folders3 = total_folders1 + total_folders2 + categorie_key
+    #adds new files not already in folders into folders as well as creates folders that are not established
+    
+    
     for file in final_files:
         
-        if "." in file and file not in total_folders:
-    
+        if "." in file and file not in total_folders3:
             word = getting_filenames(file)
+            os.makedirs(os.path.join(temp_path,word),exist_ok=True)
+            shutil.move(os.path.join(temp_path2, file),os.path.join(temp_path, word))
             
-            os.makedirs(
-                os.path.join(temp_path,word),exist_ok=True)
-            
-            shutil.move(
-                os.path.join(temp_path2, file),
-                os.path.join(temp_path, word))
-            
-        
-        elif "." in file and file in total_folders:
-            shutil.move(
-                os.path.join(temp_path2,file),
-                os.path.join(temp_path,file))
+        elif "." in file and file in total_folders3:
+            if getting_filenames(file).lower() in total_folders2:
+                target = "." + getting_filenames(file)
+                for categorie, extension in predefined_folders.items():
+                    if target in extension:
+                        word = getting_filenames(file)
+                        shutil.move(
+                        os.path.join(temp_path2,file),
+                        os.path.join(temp_path,categorie,word))
+        else:
+            shutil.move(os.path.join(temp_path2,file),os.path.join(temp_path,categories,extension))
             
