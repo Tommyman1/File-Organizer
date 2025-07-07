@@ -3,25 +3,35 @@ import shutil #Will be used to move files alround
 import platform #Determines your platforms
 
 #A function to get all the folders avoiding all the hidden files/Folders
-def getting_folders(move, all_folders, temp_path_os_list_dir):
-    for item in temp_path_os_list_dir:    
-        if os.path.isdir(temp_path + move + item) and item.startswith(".") == False:
+def getting_folders(temp_path, all_folders, pathinfo):
+    for item in pathinfo:    
+        if os.path.isdir(os.path.join(temp_path,item)) and not item.startswith("."):
             all_folders.append(item)
     return all_folders
 
 #A function to remove all the hidden folders ##hidden files typicall start with . so if thet are starting with . then we can make a conditonal checking if the file starts with a . then we remove it
-def getting_files(path,file_folder):
+def getting_files(path,files):
     file_folder = os.listdir(path)
     for file in file_folder:
-        if file.startswith("."): 
-            file_folder.remove(file)
-    return file_folder
+        if not file.startswith("."): 
+            files.append(file)
+    return files
 
 def filter(banned,file,filtered_file,):
     for f in file:
         if f not in banned:
             filtered_file.append(f)
     return filtered_file
+
+def getting_filenames(title):
+    index = title.rfind(".") + 1
+    word = ""
+    while index < len(title):
+        word += title[index]
+        index += 1
+    return word
+        
+        
             
 
 if __name__ == "__main__":
@@ -31,10 +41,7 @@ if __name__ == "__main__":
     #Determines the path based on the system in your computer
     windows_path = "C:\\Users"
     linux_mac_path = "/Users"
-    back_slash = "\\"
-    forward_slash = "/"
     
-    move = back_slash if platform.system() == "Windows" else forward_slash
     path = windows_path if platform.system() == "Windows" else linux_mac_path
     
     banned = [
@@ -74,13 +81,14 @@ if __name__ == "__main__":
     print("\nYour choice is valid. Let's continue.\n")
     
     #move into the next folder
-    temp_path = path + move + filtered_file[command]
+    temp_path = os.path.join(path,filtered_file[command])
+    
     #list all information in this path
     all_info = os.listdir(temp_path)
     
     #we are getting all the folders in this directory and removing any hidden files 
     all_folders_in_this_directory = []
-    getting_folders(move,all_folders_in_this_directory,all_info)
+    getting_folders(temp_path,all_folders_in_this_directory,all_info)
     filtered_folders = []
     filter(banned,all_folders_in_this_directory,filtered_folders)
     
@@ -105,40 +113,44 @@ if __name__ == "__main__":
     
     #We are going to do a final scan in the final scan for folders
     
-    temp_path2 = temp_path + move + filtered_folders[command2]
+    temp_path2 = os.path.join(temp_path,filtered_folders[command2])
+
     
     final_folders_unorganized = os.listdir(temp_path2)
     final_folders = []
-    getting_folders(move, final_folders, final_folders_unorganized)
+    getting_folders(temp_path2, final_folders, final_folders_unorganized)
     
-    #filtered_folders has all the folders 1st layer temp1
-    #final_folders has the 2st layer folder temp2
+    #final files all the files in this directory
+    final_files = []
+    getting_files(temp_path2,final_files)
     
+    #filtered_folders has all the folders 1st layer temp1 #final_folders has the 2st layer folder temp2
+    total_folders = filtered_folders + final_folders
+    os.makedirs(
+        os.path.join(temp_path,"Other_Folders"),
+        exist_ok=True)
     
-    #print(filtered_folders)
+    for item in final_folders:
+        shutil.move(
+            os.path.join(temp_path2,item),
+            os.path.join(temp_path,"Other_Folders"))
+
+    for file in final_files:
+        
+        if "." in file and file not in total_folders:
+    
+            word = getting_filenames(file)
             
-        #force create in image directories .pdf .img etc
+            os.makedirs(
+                os.path.join(temp_path,word),exist_ok=True)
+            
+            shutil.move(
+                os.path.join(temp_path2, file),
+                os.path.join(temp_path, word))
+            
         
-        #account for random folders so force create random_folders
-        
-        #create folders based of .ending 
-        
-        #check if folder already existed if so move files in that place.
-        
-        #loop and ask incase they want to check other folders
-        
-        
-        
-    
-    
-    
-    
-    
-    
-
-    
-
-
-
-
-
+        elif "." in file and file in total_folders:
+            shutil.move(
+                os.path.join(temp_path2,file),
+                os.path.join(temp_path,file))
+            
