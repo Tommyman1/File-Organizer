@@ -79,16 +79,55 @@ if __name__ == "__main__":
     all_info = os.listdir(temp_path)
     
     #we are getting all the folders in this directory and removing any hidden files 
-    all_folders = []
-    getting_folders(move,all_folders,all_info)
+    all_folders_in_this_directory = []
+    getting_folders(move,all_folders_in_this_directory,all_info)
     filtered_folders = []
-    filter(banned,all_folders,filtered_folders)
+    filter(banned,all_folders_in_this_directory,filtered_folders)
     
+    #we basically got to ask the user to pick which folder to organize again inside the other folder
+    list_user_folder2 = "\n".join(f"{i}. {pair}" for i, pair in enumerate(filtered_folders)) #organinizes the folders with there corresponding number call inside another directory
     
-    #checking
-    print(filtered_folders)
+    while True:
+        try:
+            command2 = int(input(f"Here is the list, please choose one with its corresponding number to organize:\n\n{list_user_folder2}\n"))
+            if filtered_folders[command2] in filtered_folders:
+                break
             
-
+        except IndexError:
+            print("\nThat value is out of range. Please try again.\n")
+            True
+            
+        except ValueError:
+            print("\nInvalid input. Please enter a valid number to continue.")
+            True
+            
+    print("\nYour choice is valid. Let's continue.\n")
+    
+    #We are going to do a final scan in the final scan for folders
+    
+    temp_path2 = temp_path + move + filtered_folders[command2]
+    
+    final_folders_unorganized = os.listdir(temp_path2)
+    final_folders = []
+    getting_folders(move, final_folders, final_folders_unorganized)
+    
+    #filtered_folders has all the folders 1st layer temp1
+    #final_folders has the 2st layer folder temp2
+    
+    
+    #print(filtered_folders)
+            
+        #force create in image directories .pdf .img etc
+        
+        #account for random folders so force create random_folders
+        
+        #create folders based of .ending 
+        
+        #check if folder already existed if so move files in that place.
+        
+        #loop and ask incase they want to check other folders
+        
+        
         
     
     
