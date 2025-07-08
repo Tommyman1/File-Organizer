@@ -9,20 +9,22 @@ def getting_folders(temp_path, all_folders, pathinfo):
             all_folders.append(item)
     return all_folders
 
-#A function to remove all the hidden folders ##hidden files typicall start with . so if thet are starting with . then we can make a conditonal checking if the file starts with a . then we remove it
-def getting_files(path,files):
+#A function to pull all the files and not the hidden files
+def get_file_name(path,files):
     file_folder = os.listdir(path)
     for file in file_folder:
         if not file.startswith("."): 
             files.append(file)
     return files
 
-def filter(banned,file,filtered_file,):
+#A function filter all the files I do not want accessed from the file returning the filtered file
+def filter_banned(banned,file,filtered_file,):
     for f in file:
         if f not in banned:
             filtered_file.append(f)
     return filtered_file
 
+#function that gets the file names by going at the end and getting the name of the frst instance of "." if it dosent we dont do anything to the file
 def getting_filenames(title):
     ext = os.path.splitext(title)[-1]
     if ext:
@@ -33,7 +35,7 @@ def getting_filenames(title):
 
 if __name__ == "__main__":
     
-    print("\nHello user, today we will be organzing your files. I will pull out a list of all the users in this device")
+    print("\nHello user, today we will be organizing your files. I will pull out a list of all the users in this device")
     
     #Determines the path based on the system in your computer
     windows_path = "C:\\Users"
@@ -57,33 +59,39 @@ if __name__ == "__main__":
     user_folder = os.listdir(path)#gets all client user folders in the c drive
     
     filtered_file = []
-    filter(banned,user_folder,filtered_file)
+    filter_banned(banned,user_folder,filtered_file)
     
-    list_user_folder = "\n".join(f"{i}. {pair}" for i, pair in enumerate(filtered_file)) #organinizes the folders with there corresponding number call
+    #organizes the folders with there corresponding number call
+    list_user_folder = "\n".join(f"{i}. {pair}" for i, pair in enumerate(filtered_file)) 
     final = 1
+    
+    #Loops so the user has the option to try and organize a different user folder
     while final != 0:
         
+        #ask user which user user folder they want to organize
         while True:
+            #error handling
             try:
                 command = int(input(f"\nHere is the list, please choose one with its corresponding number to keep going:\n\n{list_user_folder}\n"))
                 
+                #if user type a value greater then the amount in the folders and it continues to the loop again
                 if command >= len(filtered_file):
                     print("\nThat value is out of range. Please try again.\n")
                     continue
                 
+                #if they type negative one they can simply leave
                 if command <= -1:
                     print("\nTo exit, type -1\n")
                     exit()
-                    
+                #if they type a valid command the while loop breaks    
                 else:
                     break
-                
+            #if a string is typed instead of getting a value error it will just repeat the while loop and tell them they put an invalid value   
             except ValueError:
                 print("\nInvalid input. Please enter a valid number to continue.")
                     
                 
-        print("\nYour choice is valid. Let's continue.\n")
-        
+        print("\nYour choice is valid. Let's continue.\n") 
         
         #move into the next folder
         temp_path = os.path.join(path,filtered_file[command])
@@ -95,32 +103,35 @@ if __name__ == "__main__":
         all_folders_in_this_directory = []
         getting_folders(temp_path,all_folders_in_this_directory,all_info)
         filtered_folders = []
-        filter(banned,all_folders_in_this_directory,filtered_folders)
+        filter_banned(banned,all_folders_in_this_directory,filtered_folders)
         
         #we basically got to ask the user to pick which folder to organize again inside the other folder
-        list_user_folder2 = "\n".join(f"{i}. {pair}" for i, pair in enumerate(filtered_folders)) #organinizes the folders with there corresponding number call inside another directory
+        list_user_folder2 = "\n".join(f"{i}. {pair}" for i, pair in enumerate(filtered_folders)) 
         
+        #if the folder that was chosen does not have anything inside    
+        if not filtered_folders:
+            print("\nNo subfolders found to organize.\n")
+            continue
     
-        
+        #ask user which user user folder they want to organize
         while True:
+            #error handling
             try:
                 command2 = int(input(f"\nHere is the list, please choose one with its corresponding number to keep going:\n\n{list_user_folder2}\n"))
                 
+                #if user type a value greater then the amount in the folders and it continues to the loop again
                 if command2 <= -1:
                     print("\nTo exit, type -1\n")
                     exit()
-                    
-                elif not filtered_folders:
-                    print("\nNo subfolders found to organize.\n")
-                    continue
-                    
-                    
+                
+                #if user type a value greater then the amount in the folders and it continues to the loop again    
                 elif command2 >= len(filtered_folders):
                     print("\nThat value is out of range. Please try again.\n")
                     
+                #if they type a valid command the while loop breaks    
                 else:
                     break
-                
+            #if a string is typed instead of getting a value error it will just repeat the while loop and tell them they put an invalid value    
             except ValueError:
                 print("\nInvalid input. Please enter a valid number to continue.")
                     
@@ -129,19 +140,26 @@ if __name__ == "__main__":
         #We are going to do a final scan in the final scan for folders
         
         temp_path2 = os.path.join(temp_path,filtered_folders[command2])
-
         
         final_folders_unorganized = os.listdir(temp_path2)
+        
+        #if the folder that was chosen does not have anything inside    
+        if not final_folders_unorganized:
+            print("\nNo subfolders found to organize.\n")
+            continue
+        
+        #will store all the folders in final folders using getting folders functions
         final_folders = []
         getting_folders(temp_path2, final_folders, final_folders_unorganized)
         
         #final files all the files in this directory
         final_files = []
-        getting_files(temp_path2,final_files)
+        get_file_name(temp_path2,final_files)
         
         #filtered_folders has all the folders 1st layer temp1 #final_folders has the 2st layer folder temp2
-        total_folders1 = filtered_folders + final_folders
+        user_selected_folders = filtered_folders + final_folders
         
+        #pre determined folders for organization
         predefined_folders = {
         "images": [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".pdf"],
         "videos": [".mp4", ".mkv", ".avi", ".mov", ".wmv", ".flv"],
@@ -155,20 +173,19 @@ if __name__ == "__main__":
         "scripts": [".py", ".js", ".java", ".cpp", ".html", ".css"],
         "Other_Folders": []}
         
-        total_folders2 = []
+        #folders inside the pre made ones inside the category folders
+        known_extensions = []
+        
+        #folders pre determined ones
         categorie_key = []
         
+        #makes a folder for all the category
         for categories, extension_files in predefined_folders.items():
             os.makedirs(
             os.path.join(temp_path,categories.lower()),
             exist_ok=True)
             
-            for extension in extension_files:
-                total_folders2.append(extension.replace(".",""))
-                os.makedirs(
-                os.path.join(temp_path,categories.lower(),extension.replace(".","").lower()),
-                exist_ok=True)
-        
+        #moves all the folders in final folders to other folders
         for folder in final_folders:
             try:
                 shutil.move(
@@ -177,18 +194,21 @@ if __name__ == "__main__":
             except shutil.Error as e:
                 print(f"Could not move{os.path.join(temp_path2,folder)} to {os.path.join(temp_path,"Other_Folders")}:{e}")
         
+        #adds to categorie key and known_extensions
         for categories, extension_files in predefined_folders.items():
             categorie_key.append(categories)
             for extension in extension_files:
-                total_folders2.append(extension.replace(".",""))
-                
-        total_folders3 = total_folders1 + total_folders2 + categorie_key
-        #adds new files not already in folders into folders as well as creates folders that are not established
+                known_extensions.append(extension.replace(".",""))
         
+        #everyfolder we have have
+        all_known_folders = set(user_selected_folders + known_extensions + categorie_key)
+        
+        #adds new files not already in folders into folders as well as creates folders that are not established
         
         for file in final_files:
             
-            if "." in file and file not in total_folders3:
+            #makes files into folders then moves them there
+            if "." in file and getting_filenames(file).lower() not in all_known_folders:
                 word = getting_filenames(file).lower()
                 os.makedirs(os.path.join(temp_path,word),exist_ok=True)
                 
@@ -196,13 +216,13 @@ if __name__ == "__main__":
                     shutil.move(os.path.join(temp_path2, file),os.path.join(temp_path, word))
                 except shutil.Error as e:
                             print(f"Could not move{os.path.join(temp_path2,file)} to {os.path.join(temp_path, word)}:{e}")
-                
-            elif "." in file and getting_filenames(file).lower() in total_folders2:
+                            
+            #moves files into the premade folders   
+            elif "." in file and getting_filenames(file).lower() in known_extensions:
                 target = "." + getting_filenames(file).lower()
                 for categorie, extension in predefined_folders.items():
                     if target in extension:
                         word = getting_filenames(file).lower()
-                        
                         
                         try:
                             shutil.move(
@@ -210,21 +230,33 @@ if __name__ == "__main__":
                             os.path.join(temp_path,categorie.lower(),word))
                         except shutil.Error as e:
                             print(f"Could not move{os.path.join(temp_path2,file)} to {os.path.join(temp_path,categorie.lower(),word)}:{e}")
+                            
+            #moves folders into other folders                
             else:
                 try:
-                    shutil.move(os.path.join(temp_path2,file),os.path.join(temp_path,'Other_Folders'))
+                    shutil.move(os.path.join(temp_path2,file),os.path.join(temp_path, 'Other_Folders'))
                 except shutil.Error as e:
-                            print(f"Could not move{os.path.join(temp_path2,file)} to {os.path.join(temp_path,'Other_Folders')}:{e}")
-                
+                            print(f"Could not move{os.path.join(temp_path2,file)} to {os.path.join(temp_path, 'Other_Folders')}:{e}")
+        #provides an exits and the option to organize a different user folder        
         while True:
             final = int(input("\nWould you like to organize a different folder?\n"
-                "0: Continue with current folder\n"
+                "0: Exit!\n"
                 "1: Choose a different User folder\n"
                 "Enter your choice (0, 1): "))
             if final in (0,1):
                 break
             else:
                 print("\nInvalid input. Please enter a valid number to continue.")
+                
+        #wipes the data to make sure there nothing in there for the next loop
+        all_known_folders.clear()
+        known_extensions.clear()
+        categorie_key.clear()
+        user_selected_folders.clear()
+        final_files.clear()
+        final_folders.clear()
+        all_folders_in_this_directory.clear()
+        filtered_folders.clear()
                 
     print("Goodbye Have a nice day")
                     
