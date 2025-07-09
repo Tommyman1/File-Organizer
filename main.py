@@ -192,7 +192,7 @@ if __name__ == "__main__":
                 os.path.join(temp_path2,folder),
                 os.path.join(temp_path,"Other_Folders"))
             except shutil.Error as e:
-                print(f"Could not move{os.path.join(temp_path2,folder)} to {os.path.join(temp_path,"Other_Folders")}:{e}")
+                print(f"Could not move{os.path.join(temp_path2,folder)} to {os.path.join(temp_path,"Other_Folders")}: {e}")
         
         #adds to categorie key and known_extensions
         for categories, extension_files in predefined_folders.items():
@@ -204,7 +204,6 @@ if __name__ == "__main__":
         all_known_folders = set(user_selected_folders + known_extensions + categorie_key)
         
         #adds new files not already in folders into folders as well as creates folders that are not established
-        
         for file in final_files:
             
             #makes files into folders then moves them there
@@ -215,7 +214,23 @@ if __name__ == "__main__":
                 try:
                     shutil.move(os.path.join(temp_path2, file),os.path.join(temp_path, word))
                 except shutil.Error as e:
-                            print(f"Could not move{os.path.join(temp_path2,file)} to {os.path.join(temp_path, word)}:{e}")
+                    count = 0
+                    while True:
+                        part1,part2 = os.path.splitext(file)
+                        count += 1
+                        new_file = part1 + "_" + str(count) + part2
+                        
+                        if os.path.exists(os.path.join(temp_path, word,new_file)) == False:
+                            
+                            os.rename((os.path.join(temp_path2, file)),(os.path.join(temp_path2, new_file)))
+                            
+                            shutil.move(os.path.join(temp_path2, new_file),os.path.join(temp_path, word,new_file))
+                            
+                            break
+                            
+                        else:
+                            continue       
+                            
                             
             #moves files into the premade folders   
             elif "." in file and getting_filenames(file).lower() in known_extensions:
@@ -229,7 +244,23 @@ if __name__ == "__main__":
                             os.path.join(temp_path2,file),
                             os.path.join(temp_path,categorie.lower(),word))
                         except shutil.Error as e:
-                            print(f"Could not move{os.path.join(temp_path2,file)} to {os.path.join(temp_path,categorie.lower(),word)}:{e}")
+                            count = 0
+                            while True:
+                                part1,part2 = os.path.splitext(file)
+                                count += 1
+                                new_file = part1 + "_" + str(count) + part2
+                                
+                                
+                                if os.path.exists(os.path.join(temp_path, word,new_file)) == False:
+                                    
+                                    os.rename((os.path.join(temp_path2, file)),(os.path.join(temp_path2, new_file)))
+                                    
+                                    shutil.move(os.path.join(temp_path2,new_file),os.path.join(temp_path,categorie.lower(),word))
+                                    
+                                    break
+                                    
+                                else:
+                                    continue       
                             
             #moves folders into other folders                
             else:
