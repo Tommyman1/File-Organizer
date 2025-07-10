@@ -13,12 +13,33 @@ This Python script allows you to organize files on your computer by categorizing
 
 ## 📂 File Categories
 
-- Images (`.jpg`, `.png`, `.gif`, etc.)
-- Videos (`.mp4`, `.avi`, etc.)
-- Audio (`.mp3`, `.wav`, etc.)
-- Documents, Spreadsheets, Presentations
-- Text files, Scripts, Archives, Executables
-- Other folders for anything uncategorized
+Images & Graphics: .jpg, .jpeg, .png, .gif, .bmp, .tiff, .webp, .svg, .heic, .ico, .pdf, .avif
+
+Videos: .mp4, .mkv, .avi, .mov, .wmv, .flv, .webm, .3gp, .mpeg, .m4v
+
+Audio: .mp3, .wav, .flac, .aac, .ogg, .wma, .m4a, .opus, .alac
+
+Work Files (Documents, Spreadsheets, Presentations):
+.doc, .docx, .odt, .rtf, .pdf, .tex, .xls, .xlsx, .ods, .csv, .tsv, .ppt, .pptx, .odp, .key, .pps
+
+Text Files: .txt, .md, .log, .ini, .cfg, .epub
+
+Executables & Installers: .exe, .msi, .sh, .bat, .app, .apk, .deb, .rpm, .bin, .command
+
+Compressed Archives: .zip, .rar, .7z, .tar, .gz, .bz2, .xz, .iso, .dmg
+
+Code & Scripts: .py, .js, .ts, .jsx, .tsx, .java, .c, .cpp, .h, .cs, .html, .css, .json, .xml, .yml, .yaml, .php, .rb, .go, .rs, .sql, .ipynb, .wpress
+
+Games (ROMs, saves, emulator formats, mods):
+Save files: .sav, .srm, .dat, .bin, .rpf
+Extended saves: .sav1 to .sav12, .sa1 to .sa12
+Cheat files: .cheats
+Save snapshots: .ss1 to .ss9
+Mods & packages: .pak, .wad, .vpk, .xci
+ROMs & disc images: .iso, .img, .cia, .nds, .3ds, .nsp, .wbfs, .gcm
+Emulator formats: .gba, .gb, .gbc, .nes, .smc, .sfc, .n64, .z64, .cue, .gdi, .cdi, .d64, .prg, .a26, .fds
+
+Other folders: For uncategorized or miscellaneous folders
 
 ## 🚀 How to Run
 
