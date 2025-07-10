@@ -32,29 +32,42 @@ def getting_filenames(title):
     else:
         return ''
         
+#pre determined folders for organization
+predefined_folders = {
+"images": [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".pdf"],
+"videos": [".mp4", ".mkv", ".avi", ".mov", ".wmv", ".flv"],
+"audio": [".mp3", ".wav", ".flac", ".aac", ".ogg"],
+"documents": [".doc", ".docx", ".odt", ".rtf"],
+"spreadsheets": [".xls", ".xlsx", ".ods", ".csv"],
+"presentations": [".ppt", ".pptx", ".odp"],
+"textfiles": [".txt", ".md"],
+"executables": [".exe", ".msi", ".sh", ".bat", ".app"],
+"archives": [".zip", ".rar", ".7z", ".tar", ".gz"],
+"scripts": [".py", ".js", ".java", ".cpp", ".html", ".css"],
+"Other_Folders": []}
+
+banned = [
+# Windows-specific hidden/system folders
+"Cookies", "Local Settings", "PrintHood", "Recent", "Searches",
+"SendTo", "AppData", "Application Data", "NetHood", "Start Menu",
+"NTUSER.DAT", "NTUSER.DAT.LOG1", "NTUSER.DAT.LOG2", "thumbs.db",
+"desktop.ini", "$Recycle.Bin", "System Volume Information","All Users","Default User",
+
+# macOS-specific (non-dot) system folders
+"TemporaryItems", "VolumeIcon.icns",
+
+# Linux/UNIX (non-dot) folders — mostly excluded unless explicitly named
+    "Trash"]
+
+#Determines the path based on the system in your computer
+windows_path = "C:\\Users"
+linux_mac_path = "/Users"
 
 if __name__ == "__main__":
     
     print("\nHello user, today we will be organizing your files. I will pull out a list of all the users in this device")
     
-    #Determines the path based on the system in your computer
-    windows_path = "C:\\Users"
-    linux_mac_path = "/Users"
-    
     path = windows_path if platform.system() == "Windows" else linux_mac_path
-    
-    banned = [
-    # Windows-specific hidden/system folders
-    "Cookies", "Local Settings", "PrintHood", "Recent", "Searches",
-    "SendTo", "AppData", "Application Data", "NetHood", "Start Menu",
-    "NTUSER.DAT", "NTUSER.DAT.LOG1", "NTUSER.DAT.LOG2", "thumbs.db",
-    "desktop.ini", "$Recycle.Bin", "System Volume Information","All Users","Default User",
-
-    # macOS-specific (non-dot) system folders
-    "TemporaryItems", "VolumeIcon.icns",
-
-    # Linux/UNIX (non-dot) folders — mostly excluded unless explicitly named
-    "Trash"]
     
     user_folder = os.listdir(path)#gets all client user folders in the c drive
     
@@ -90,7 +103,6 @@ if __name__ == "__main__":
             except ValueError:
                 print("\nInvalid input. Please enter a valid number to continue.")
                     
-                
         print("\nYour choice is valid. Let's continue.\n") 
         
         #move into the next folder
@@ -158,21 +170,7 @@ if __name__ == "__main__":
         
         #filtered_folders has all the folders 1st layer temp1 #final_folders has the 2st layer folder temp2
         user_selected_folders = filtered_folders + final_folders
-        
-        #pre determined folders for organization
-        predefined_folders = {
-        "images": [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".pdf"],
-        "videos": [".mp4", ".mkv", ".avi", ".mov", ".wmv", ".flv"],
-        "audio": [".mp3", ".wav", ".flac", ".aac", ".ogg"],
-        "documents": [".doc", ".docx", ".odt", ".rtf"],
-        "spreadsheets": [".xls", ".xlsx", ".ods", ".csv"],
-        "presentations": [".ppt", ".pptx", ".odp"],
-        "textfiles": [".txt", ".md"],
-        "executables": [".exe", ".msi", ".sh", ".bat", ".app"],
-        "archives": [".zip", ".rar", ".7z", ".tar", ".gz"],
-        "scripts": [".py", ".js", ".java", ".cpp", ".html", ".css"],
-        "Other_Folders": []}
-        
+    
         #folders inside the pre made ones inside the category folders
         known_extensions = []
         
@@ -219,15 +217,10 @@ if __name__ == "__main__":
                         part1,part2 = os.path.splitext(file)
                         count += 1
                         new_file = part1 + "_" + str(count) + part2
-                        
                         if os.path.exists(os.path.join(temp_path, word,new_file)) == False:
-                            
                             os.rename((os.path.join(temp_path2, file)),(os.path.join(temp_path2, new_file)))
-                            
-                            shutil.move(os.path.join(temp_path2, new_file),os.path.join(temp_path, word,new_file))
-                            
+                            shutil.move(os.path.join(temp_path2, new_file),os.path.join(temp_path, word))
                             break
-                            
                         else:
                             continue       
                             
@@ -250,15 +243,10 @@ if __name__ == "__main__":
                                 count += 1
                                 new_file = part1 + "_" + str(count) + part2
                                 
-                                
                                 if os.path.exists(os.path.join(temp_path, word,new_file)) == False:
-                                    
                                     os.rename((os.path.join(temp_path2, file)),(os.path.join(temp_path2, new_file)))
-                                    
-                                    shutil.move(os.path.join(temp_path2,new_file),os.path.join(temp_path,categorie.lower(),word))
-                                    
+                                    shutil.move(os.path.join(temp_path2,new_file),os.path.join(temp_path,categorie.lower()))
                                     break
-                                    
                                 else:
                                     continue       
                             
@@ -267,7 +255,8 @@ if __name__ == "__main__":
                 try:
                     shutil.move(os.path.join(temp_path2,file),os.path.join(temp_path, 'Other_Folders'))
                 except shutil.Error as e:
-                            print(f"Could not move{os.path.join(temp_path2,file)} to {os.path.join(temp_path, 'Other_Folders')}:{e}")
+                    print(f"Could not move{os.path.join(temp_path2,file)} to {os.path.join(temp_path, 'Other_Folders')}: in {e}")
+                          
         #provides an exits and the option to organize a different user folder        
         while True:
             final = int(input("\nWould you like to organize a different folder?\n"
@@ -289,5 +278,4 @@ if __name__ == "__main__":
         all_folders_in_this_directory.clear()
         filtered_folders.clear()
                 
-    print("Goodbye Have a nice day")
-                    
+    print("Goodbye Have a nice day")    
