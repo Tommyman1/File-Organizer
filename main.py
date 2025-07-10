@@ -31,20 +31,115 @@ def getting_filenames(title):
         return ext[1:].lower()
     else:
         return ''
+    
+#A function that renames the files and moves it
+
+def move_rename_file(src_path, dest_folder):
+            base_name = os.path.basename(src_path)
+            name, ext = os.path.splitext(base_name)
+            count = 1
+            while True:
+                new_name = f"{name}_{count}{ext}"
+                new_dest_path = os.path.join(dest_folder,new_name)
+                                             
+                if not os.path.exists(new_dest_path):
+                    # Rename the file temporarily in the source folder
+                    temp_renamed = os.path.join(os.path.dirname(src_path), new_name)
+                    os.rename(src_path, temp_renamed)
+                    shutil.move(temp_renamed, new_dest_path)
+                    break
+                count += 1
+                 
+            
+
         
 #pre determined folders for organization
+# 📁 Predefined folders for file organization
 predefined_folders = {
-"images": [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".pdf"],
-"videos": [".mp4", ".mkv", ".avi", ".mov", ".wmv", ".flv"],
-"audio": [".mp3", ".wav", ".flac", ".aac", ".ogg"],
-"documents": [".doc", ".docx", ".odt", ".rtf"],
-"spreadsheets": [".xls", ".xlsx", ".ods", ".csv"],
-"presentations": [".ppt", ".pptx", ".odp"],
-"textfiles": [".txt", ".md"],
-"executables": [".exe", ".msi", ".sh", ".bat", ".app"],
-"archives": [".zip", ".rar", ".7z", ".tar", ".gz"],
-"scripts": [".py", ".js", ".java", ".cpp", ".html", ".css"],
-"Other_Folders": []}
+    # 🖼️ Image & Graphic Files
+    "images": [
+        ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".svg", ".heic", ".ico", ".pdf", ".avif"
+    ],
+
+    # 🎬 Video Formats
+    "videos": [
+        ".mp4", ".mkv", ".avi", ".mov", ".wmv", ".flv", ".webm", ".3gp", ".mpeg", ".m4v"
+    ],
+
+    # 🎵 Audio Formats
+    "audio": [
+        ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma", ".m4a", ".opus", ".alac"
+    ],
+
+    # 📄📊📈 Combined Work Files (Docs, Sheets, Presentations)
+    "workfiles": [
+        # Documents
+        ".doc", ".docx", ".odt", ".rtf", ".pdf", ".tex",
+
+        # Spreadsheets
+        ".xls", ".xlsx", ".ods", ".csv", ".tsv",
+
+        # Presentations
+        ".ppt", ".pptx", ".odp", ".key", ".pps",
+    ],
+
+    # 📝 Plain Text
+    "textfiles": [
+        ".txt", ".md", ".log", ".ini", ".cfg",".epub",
+    ],
+
+    # 🧰 Executables & Installers
+    "executables": [
+        ".exe", ".msi", ".sh", ".bat", ".app", ".apk", ".deb", ".rpm", ".bin", ".command"
+    ],
+
+    # 📦 Compressed Archives
+    "archives": [
+        ".zip", ".rar", ".7z", ".tar", ".gz", ".bz2", ".xz", ".iso", ".dmg"
+    ],
+
+    # 🧠 Code & Script Files
+    "code": [
+        ".py", ".js", ".ts", ".jsx", ".tsx", ".java", ".c", ".cpp", ".h", ".cs",
+        ".html", ".css", ".json", ".xml", ".yml", ".yaml", ".php", ".rb", ".go", ".rs",
+        ".sql", ".ipynb", ".wpress"
+    ],
+
+    # 🎮 Game Files (ROMs, saves, emulator formats, game mods)
+    "games": [
+        # Save files & containers
+        ".sav", ".srm", ".dat", ".bin", ".rpf",
+
+        # Save file extensions .sav1 to .sav12
+        ".sav1", ".sav2", ".sav3", ".sav4", ".sav5", ".sav6",
+        ".sav7", ".sav8", ".sav9", ".sav10", ".sav11", ".sav12",
+        
+        # Save file extensions .sav1 to .sav12
+        ".sa1", ".sa2", ".sa3", ".sa4", ".sa5", ".sa6",
+        ".sa7", ".sav8", ".sa9", ".sa10", ".sa11", ".sa12",
+        
+        #cheats
+        ".cheats",
+        
+        #ss
+        ".ss1",".ss2",".ss3",".ss4",".ss5",".ss6",".ss7",".ss8",".ss9",
+
+        # Game data packages / mods
+        ".pak", ".wad", ".vpk", ".xci",
+
+        # ROMs & game disc images
+        ".iso", ".img", ".cia", ".nds", ".3ds", ".nsp", ".wbfs", ".gcm",
+
+        # Emulator-specific formats
+        ".gba", ".gb", ".gbc", ".nes", ".smc", ".sfc", ".n64", ".z64",
+        ".cue", ".gdi", ".cdi", ".d64", ".prg", ".a26", ".fds"
+    ],
+
+    # 📂 Misc or Uncategorized Folders
+    "Other_Folders": []
+}
+
+
 
 banned = [
 # Windows-specific hidden/system folders
@@ -126,6 +221,7 @@ if __name__ == "__main__":
             continue
     
         #ask user which user user folder they want to organize
+        
         while True:
             #error handling
             try:
@@ -155,10 +251,32 @@ if __name__ == "__main__":
         
         final_folders_unorganized = os.listdir(temp_path2)
         
-        #if the folder that was chosen does not have anything inside    
-        if not final_folders_unorganized:
-            print("\nNo subfolders found to organize.\n")
-            continue
+        #This while loop is done to allow the user to not exit the program yet and instead move along different folders within the user folders if it finds that it is empty
+        while True:
+            temp_path2 = os.path.join(temp_path,filtered_folders[command2])
+            final_folders_unorganized = os.listdir(temp_path2)
+            
+            #if the folder that was chosen does not have anything inside    
+            if not final_folders_unorganized:
+                print("\nNo subfolders found to organize.\n")
+                    #error handling
+                try:
+                    command2 = int(input(f"\nHere is the list, please choose one with its corresponding number to keep going:\n\n{list_user_folder2}\n"))
+                    
+                    #if user type a value greater then the amount in the folders and it continues to the loop again
+                    if command2 <= -1:
+                        print("\nTo exit, type -1\n")
+                        exit()
+                    
+                    #if user type a value greater then the amount in the folders and it continues to the loop again    
+                    elif command2 >= len(filtered_folders):
+                        print("\nThat value is out of range. Please try again.\n")
+                
+                #if a string is typed instead of getting a value error it will just repeat the while loop and tell them they put an invalid value    
+                except ValueError:
+                    print("\nInvalid input. Please enter a valid number to continue.")
+            else:
+                break
         
         #will store all the folders in final folders using getting folders functions
         final_folders = []
@@ -190,7 +308,9 @@ if __name__ == "__main__":
                 os.path.join(temp_path2,folder),
                 os.path.join(temp_path,"Other_Folders"))
             except shutil.Error as e:
-                print(f"Could not move{os.path.join(temp_path2,folder)} to {os.path.join(temp_path,"Other_Folders")}: {e}")
+                src_path = os.path.join(temp_path2,folder)
+                dest_path = os.path.join(temp_path,"Other_Folders")
+                print(f"Could not move{src_path} to {dest_path}: {e}")
         
         #adds to categorie key and known_extensions
         for categories, extension_files in predefined_folders.items():
@@ -198,64 +318,50 @@ if __name__ == "__main__":
             for extension in extension_files:
                 known_extensions.append(extension.replace(".",""))
         
-        #everyfolder we have have
+        #everyfolder we have have and getting rid of duplicates
         all_known_folders = set(user_selected_folders + known_extensions + categorie_key)
-        
+            
         #adds new files not already in folders into folders as well as creates folders that are not established
         for file in final_files:
             
             #makes files into folders then moves them there
             if "." in file and getting_filenames(file).lower() not in all_known_folders:
                 word = getting_filenames(file).lower()
-                os.makedirs(os.path.join(temp_path,word),exist_ok=True)
-                
+                dest_path = os.path.join(temp_path,word)  
+                os.makedirs(dest_path,exist_ok=True)
+                src_path = os.path.join(temp_path2, file)
                 try:
-                    shutil.move(os.path.join(temp_path2, file),os.path.join(temp_path, word))
+                    shutil.move(src_path, dest_path)
                 except shutil.Error as e:
-                    count = 0
-                    while True:
-                        part1,part2 = os.path.splitext(file)
-                        count += 1
-                        new_file = part1 + "_" + str(count) + part2
-                        if os.path.exists(os.path.join(temp_path, word,new_file)) == False:
-                            os.rename((os.path.join(temp_path2, file)),(os.path.join(temp_path2, new_file)))
-                            shutil.move(os.path.join(temp_path2, new_file),os.path.join(temp_path, word))
-                            break
-                        else:
-                            continue       
-                            
+                    move_rename_file(src_path,dest_path)          
                             
             #moves files into the premade folders   
             elif "." in file and getting_filenames(file).lower() in known_extensions:
                 target = "." + getting_filenames(file).lower()
                 for categorie, extension in predefined_folders.items():
                     if target in extension:
-                        word = getting_filenames(file).lower()
+                        src_path = os.path.join(temp_path2,file)
                         
+                        category_folder = os.path.join(temp_path,categorie)
                         try:
                             shutil.move(
                             os.path.join(temp_path2,file),
-                            os.path.join(temp_path,categorie.lower(),word))
+                            os.path.join(temp_path,categorie))
                         except shutil.Error as e:
                             count = 0
                             while True:
-                                part1,part2 = os.path.splitext(file)
-                                count += 1
-                                new_file = part1 + "_" + str(count) + part2
-                                
-                                if os.path.exists(os.path.join(temp_path, word,new_file)) == False:
-                                    os.rename((os.path.join(temp_path2, file)),(os.path.join(temp_path2, new_file)))
-                                    shutil.move(os.path.join(temp_path2,new_file),os.path.join(temp_path,categorie.lower()))
-                                    break
-                                else:
-                                    continue       
-                            
+                                move_rename_file(src_path,category_folder)
+                                break
+                                    
             #moves folders into other folders                
             else:
+                src_path = os.path.join(temp_path2,file)
+                other_folder_path = os.path.join(temp_path, 'Other_Folders')
+                
                 try:
-                    shutil.move(os.path.join(temp_path2,file),os.path.join(temp_path, 'Other_Folders'))
+                    shutil.move(src_path,other_folder_path)
                 except shutil.Error as e:
-                    print(f"Could not move{os.path.join(temp_path2,file)} to {os.path.join(temp_path, 'Other_Folders')}: in {e}")
+                    print(f"Could not move{src_path} to {other_folder_path}: in {e}")      
                           
         #provides an exits and the option to organize a different user folder        
         while True:
